@@ -199,8 +199,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent serviceIntent = new Intent(MainActivity.this, DataTransferService.class);
 
-                serviceIntent.setAction(DataTransferService.ACTION_SEND_FILE);
-
+                serviceIntent.setAction(DataTransferService.ACTION_SEND_DATA);
                 serviceIntent.putExtra(DataTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
                         mInfo.groupOwnerAddress.getHostAddress());
                 Log.i(TAG, "owner's ip is " + mInfo.groupOwnerAddress.getHostAddress());

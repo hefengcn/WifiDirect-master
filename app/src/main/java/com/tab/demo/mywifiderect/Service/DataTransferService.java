@@ -17,11 +17,12 @@ import java.net.Socket;
  * socket connection with the WiFi Direct Group Owner and writing the file
  */
 public class DataTransferService extends IntentService {
+    private static final String TAG = "DataTransferService";
 
     private static final int SOCKET_TIMEOUT = 5000;
-    public static final String ACTION_SEND_FILE = "com.example.android.wifidirect.SEND_DATA";
-    public static final String EXTRAS_GROUP_OWNER_ADDRESS = "sd_go_host";
-    public static final String EXTRAS_GROUP_OWNER_PORT = "sd_go_port";
+    public static final String ACTION_SEND_DATA = "com.example.android.wifidirect.senddata";
+    public static final String EXTRAS_GROUP_OWNER_ADDRESS = "group_owner_address";
+    public static final String EXTRAS_GROUP_OWNER_PORT = "group_owner_port";
 
     public DataTransferService(String name) {
         super(name);
@@ -31,44 +32,39 @@ public class DataTransferService extends IntentService {
         super("DataTransferService");
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.app.IntentService#onHandleIntent(android.content.Intent)
-     */
+
     @Override
     protected void onHandleIntent(Intent intent) {
 
         Context context = getApplicationContext();
-        if (intent.getAction().equals(ACTION_SEND_FILE)) {
-            String host = intent.getExtras().getString(
-                    EXTRAS_GROUP_OWNER_ADDRESS);
+        if (intent.getAction().equals(ACTION_SEND_DATA)) {
 
-            Socket socket = new Socket();
-
+            String host = intent.getExtras().getString(EXTRAS_GROUP_OWNER_ADDRESS);
             int port = intent.getExtras().getInt(EXTRAS_GROUP_OWNER_PORT);
 
+            Socket socket = new Socket();
             try {
-                Log.d("xyz", "Opening client socket - ");
+                /**
+                 * Binds the socket to a local address.
+                 * If the address is null, then the system will pick up
+                 * an ephemeral port and a valid local address to bind the socket.*/
                 socket.bind(null);
-                socket.connect((new InetSocketAddress(host, port)),
-                        SOCKET_TIMEOUT);
+                /*Connects this socket to the server with a specified timeout value.*/
+                socket.connect((new InetSocketAddress(host, port)), SOCKET_TIMEOUT);
 
-                Log.d("xyz",
-                        "Client socket - " + socket.isConnected());
-				/*returns an output stream to write data into this socket*/
+                Log.d(TAG, "the connection state of the socket is" + socket.isConnected());
+                /*returns an output stream to write data into this socket*/
                 OutputStream stream = socket.getOutputStream();
 
                 stream.write("hehehe".getBytes());
             } catch (IOException e) {
-                Log.e("xyz", e.getMessage());
+                Log.e(TAG, e.getMessage());
             } finally {
                 if (socket != null) {
                     if (socket.isConnected()) {
                         try {
                             socket.close();
                         } catch (IOException e) {
-                            // Give up
                             e.printStackTrace();
                         }
                     }
