@@ -22,16 +22,12 @@ import java.net.Socket;
  * A simple server socket that accepts connection and writes some data on
  * the stream.
  */
-public class FileServerAsyncTask extends
-        AsyncTask<Void, Void, String> {
+public class FileServerAsyncTask extends AsyncTask<Void, Void, String> {
+    private static final String TAG = "FileServerAsyncTask";
 
     private Context context;
     private TextView statusText;
 
-    /**
-     * @param context
-     * @param statusText
-     */
     public FileServerAsyncTask(Context context, View statusText) {
         this.context = context;
         this.statusText = (TextView) statusText;
@@ -40,12 +36,12 @@ public class FileServerAsyncTask extends
     @Override
     protected String doInBackground(Void... params) {
         try {
-            Log.i("xyz", "file doinback");
+            Log.i(TAG, "doInBackground");
             ServerSocket serverSocket = new ServerSocket(8988);
             Socket client = serverSocket.accept();
             final File f = new File(
                     Environment.getExternalStorageDirectory() + "/"
-                            + "com.tablet.zd" + "/wifip2pshared-"
+                            + "com.tab.demo" + "/wifip2pshared-"
                             + System.currentTimeMillis() + ".jpg");
 
             File dirs = new File(f.getParent());
@@ -55,28 +51,23 @@ public class FileServerAsyncTask extends
             f.createNewFile();
 
 
-                /*Returns an input stream to read data from this socket*/
+            /*Returns an input stream to read data from this socket*/
             InputStream inputstream = client.getInputStream();
             copyFile(inputstream, new FileOutputStream(f));
             serverSocket.close();
             return f.getAbsolutePath();
 
         } catch (IOException e) {
-            Log.e("xyz", e.toString());
+            Log.e(TAG, e.toString());
             return null;
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-     */
     @Override
     protected void onPostExecute(String result) {
 
-        Log.i("xyz", "file onpost");
-        Toast.makeText(context, "result"+result, Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "onPostExecute result =" + result);
+        Toast.makeText(context, "onPostExecute result =" + result, Toast.LENGTH_SHORT).show();
 
         if (result != null) {
             statusText.setText("File copied - " + result);
@@ -85,14 +76,8 @@ public class FileServerAsyncTask extends
             intent.setDataAndType(Uri.parse("file://" + result), "image/*");
             context.startActivity(intent);
         }
-
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.os.AsyncTask#onPreExecute()
-     */
     @Override
     protected void onPreExecute() {
 
@@ -100,12 +85,11 @@ public class FileServerAsyncTask extends
 
 
     public static boolean copyFile(InputStream inputStream, OutputStream out) {
-        byte buf[] = new byte[1024];
+        byte[] buf = new byte[1024];
         int len;
         try {
             while ((len = inputStream.read(buf)) != -1) {
                 out.write(buf, 0, len);
-
             }
             out.close();
             inputStream.close();

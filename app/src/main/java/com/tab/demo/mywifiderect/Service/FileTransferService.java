@@ -1,5 +1,3 @@
-// Copyright 2011 Google Inc. All Rights Reserved.
-
 package com.tab.demo.mywifiderect.Service;
 
 import android.app.IntentService;
@@ -23,12 +21,12 @@ import java.net.Socket;
  * socket connection with the WiFi Direct Group Owner and writing the file
  */
 public class FileTransferService extends IntentService {
-
-    private static final int SOCKET_TIMEOUT = 5000;
-    public static final String ACTION_SEND_FILE = "com.example.android.wifidirect.SEND_FILE";
-    public static final String EXTRAS_FILE_PATH = "sf_file_url";
-    public static final String EXTRAS_GROUP_OWNER_ADDRESS = "sf_go_host";
-    public static final String EXTRAS_GROUP_OWNER_PORT = "sf_go_port";
+    private static final String TAG = "FileTransferService";
+    private static final int SOCKET_TIMEOUT = 5000;//milliseconds
+    public static final String ACTION_SEND_FILE = "com.tab.demo.wifidirect.sendfile";
+    public static final String EXTRAS_FILE_PATH = "file_path";
+    public static final String EXTRAS_GROUP_OWNER_ADDRESS = "group_owner_address";
+    public static final String EXTRAS_GROUP_OWNER_PORT = "group_owner_port";
 
     public FileTransferService(String name) {
         super(name);
@@ -38,54 +36,46 @@ public class FileTransferService extends IntentService {
         super("FileTransferService");
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.app.IntentService#onHandleIntent(android.content.Intent)
-     */
     @Override
     protected void onHandleIntent(Intent intent) {
-
         Context context = getApplicationContext();
+
         if (intent.getAction().equals(ACTION_SEND_FILE)) {
             String fileUri = intent.getExtras().getString(EXTRAS_FILE_PATH);
-
-            String host = intent.getExtras().getString(
-                    EXTRAS_GROUP_OWNER_ADDRESS);
-
-            Socket socket = new Socket();
-
+            String address = intent.getExtras().getString(EXTRAS_GROUP_OWNER_ADDRESS);
             int port = intent.getExtras().getInt(EXTRAS_GROUP_OWNER_PORT);
 
+            Socket socket = new Socket();
             try {
-                Log.d("xyz", "Opening client socket - ");
+                /**
+                 * Binds the socket to a local address.
+                 * If the address is null, then the system will pick up
+                 * an ephemeral port and a valid local address to bind the socket.*/
                 socket.bind(null);
-                socket.connect((new InetSocketAddress(host, port)),
-                        SOCKET_TIMEOUT);
+                /*Connects this socket to the server with a specified timeout value.*/
+                socket.connect((new InetSocketAddress(address, port)), SOCKET_TIMEOUT);
 
-                Log.d("xyz",
-                        "Client socket - " + socket.isConnected());
+                Log.d(TAG, "the connection state of the socket is" + socket.isConnected());
 
-				/*returns an output stream to write data into this socket*/
+                /*returns an output stream to write data into this socket*/
                 OutputStream stream = socket.getOutputStream();
                 ContentResolver cr = context.getContentResolver();
                 InputStream is = null;
                 try {
                     is = cr.openInputStream(Uri.parse(fileUri));
                 } catch (FileNotFoundException e) {
-                    Log.d("xyz", e.toString());
+                    Log.d(TAG, e.toString());
                 }
                 FileServerAsyncTask.copyFile(is, stream);
-                Log.d("xyz", "Client: Data written");
+                Log.d(TAG, "Client: Data written");
             } catch (IOException e) {
-                Log.e("xyz", e.getMessage());
+                Log.e(TAG, e.getMessage());
             } finally {
                 if (socket != null) {
                     if (socket.isConnected()) {
                         try {
                             socket.close();
                         } catch (IOException e) {
-                            // Give up
                             e.printStackTrace();
                         }
                     }

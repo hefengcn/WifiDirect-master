@@ -36,6 +36,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    public static final int REQUEST_CONTENT_CODE = 20;
 
     private Button discover;
     private Button stopDiscover;
@@ -188,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
-                startActivityForResult(intent, 20);
+                startActivityForResult(intent, REQUEST_CONTENT_CODE);
 
             }
         });
@@ -239,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 20) {
+        if (requestCode == REQUEST_CONTENT_CODE) {
             super.onActivityResult(requestCode, resultCode, data);
             Uri uri = data.getData();
             Intent serviceIntent = new Intent(MainActivity.this, FileTransferService.class);

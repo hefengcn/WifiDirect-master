@@ -17,8 +17,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyHolder> {
     private List<HashMap<String, String>> mList;
 
     /*
-    * 设置回调接口，实现点击与长按
-    * */
+     * Implement callback interface to realize click and long press
+     * */
 
     public interface OnItemClickListener {
         void OnItemClick(View view, int position);
@@ -42,8 +42,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyHolder> {
 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
-        View view = inflater.inflate(R.layout.card_item,
-                parent, false);
+        View view = inflater.inflate(R.layout.card_item, parent, false);
         MyHolder myHolder = new MyHolder(view);
         return myHolder;
     }
@@ -74,8 +73,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyHolder> {
         }
 
     }
-    public void addData(int position,HashMap map) {
-        mList.add(position,map);
+
+    public void addData(int position, HashMap map) {
+        mList.add(position, map);
         notifyItemInserted(position);
     }
 
@@ -83,11 +83,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyHolder> {
         mList.remove(position);
         notifyItemRemoved(position);
     }
-    public void RefreshView(){
-        for(int i=0;i<getItemCount();i++)
+
+    public void RefreshView() {
+        for (int i = 0; i < getItemCount(); i++)
             removeData(i);
-        for(int i=0;i<getItemCount();i++)
-            addData(i,mList.get(i));
+        for (int i = 0; i < getItemCount(); i++)
+            addData(i, mList.get(i));
     }
 
     @Override
