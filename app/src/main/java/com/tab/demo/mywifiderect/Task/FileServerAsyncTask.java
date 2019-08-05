@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -71,9 +72,13 @@ public class FileServerAsyncTask extends AsyncTask<Void, Void, String> {
 
         if (result != null) {
             statusText.setText("File copied - " + result);
-            Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_VIEW);
-            intent.setDataAndType(Uri.parse("file://" + result), "image/*");
+//            Intent intent = new Intent();
+//            intent.setAction(Intent.ACTION_VIEW);
+//            intent.setDataAndType(Uri.parse("file://" + result), "image/*");
+            Uri uri = FileProvider.getUriForFile(context, "com.tab.demo.mywifiderect", new File(result));
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(uri, "image/*");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             context.startActivity(intent);
         }
     }
