@@ -1,4 +1,4 @@
-package com.miko.zd.mywifiderect.Task;
+package com.tab.demo.mywifiderect.Task;
 
 import android.content.Context;
 import android.content.Intent;
@@ -45,7 +45,7 @@ public class FileServerAsyncTask extends
             Socket client = serverSocket.accept();
             final File f = new File(
                     Environment.getExternalStorageDirectory() + "/"
-                            + "com.miko.zd" + "/wifip2pshared-"
+                            + "com.tablet.zd" + "/wifip2pshared-"
                             + System.currentTimeMillis() + ".jpg");
 
             File dirs = new File(f.getParent());

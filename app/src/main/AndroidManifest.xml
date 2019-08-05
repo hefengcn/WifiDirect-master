@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.miko.zd.mywifiderect">
+    package="com.tab.demo.mywifiderect">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
@@ -18,7 +18,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.MainActivity">
+        <activity android:name="com.tab.demo.mywifiderect.Activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,10 +27,10 @@
         </activity>
 
         <service
-            android:name=".Service.FileTransferService"
+            android:name="com.tab.demo.mywifiderect.Service.FileTransferService"
             android:enabled="true" />
         <service
-            android:name=".Service.DataTransferService"
+            android:name="com.tab.demo.mywifiderect.Service.DataTransferService"
             android:enabled="true"
             android:exported="true"></service>
     </application>

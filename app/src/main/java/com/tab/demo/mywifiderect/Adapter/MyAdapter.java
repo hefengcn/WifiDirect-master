@@ -1,4 +1,4 @@
-package com.miko.zd.mywifiderect.Adapter;
+package com.tab.demo.mywifiderect.Adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,15 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.miko.zd.mywifiderect.R;
+import com.tab.demo.mywifiderect.R;
 
 import java.util.HashMap;
 import java.util.List;
 
-
-/**
- * Created by zd on 2016/3/4.
- */
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyHolder> {
 

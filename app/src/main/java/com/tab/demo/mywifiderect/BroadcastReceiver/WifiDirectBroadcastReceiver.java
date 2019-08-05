@@ -1,4 +1,4 @@
-package com.miko.zd.mywifiderect.BroadcastReceiver;
+package com.tab.demo.mywifiderect.BroadcastReceiver;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -9,9 +9,6 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
 import android.widget.Toast;
 
-/**
- * Created by zd on 2016/3/20.
- */
 public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
 
     private WifiP2pManager mManager;

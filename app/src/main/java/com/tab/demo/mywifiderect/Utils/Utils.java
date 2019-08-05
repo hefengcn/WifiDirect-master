@@ -1,4 +1,4 @@
-package com.miko.zd.mywifiderect.Utils;
+package com.tab.demo.mywifiderect.Utils;
 
 /**
  * Created by zd on 2016/3/23.

@@ -32,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/bt_sendpicture"
-        android:layout_toRightOf="@+id/bt_discover"
+        android:layout_toEndOf="@+id/bt_discover"
         android:text="send picture"
         android:layout_marginTop="16dp"/>
 
@@ -41,13 +41,13 @@
         android:layout_height="wrap_content"
         android:text="be group owner"
         android:id="@+id/bt_bgowner"
-        android:layout_toRightOf="@+id/bt_stopconnect"
+        android:layout_toEndOf="@+id/bt_stopconnect"
         android:layout_marginTop="112dp"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/bt_senddata"
-        android:layout_toRightOf="@+id/bt_stopdiscover"
+        android:layout_toEndOf="@+id/bt_stopdiscover"
         android:text="send data"
         android:layout_marginTop="64dp"/>
 

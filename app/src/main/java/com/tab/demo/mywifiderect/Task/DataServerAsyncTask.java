@@ -1,4 +1,4 @@
-package com.miko.zd.mywifiderect.Task;
+package com.tab.demo.mywifiderect.Task;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.miko.zd.mywifiderect.Activity.MainActivity;
+import com.tab.demo.mywifiderect.Activity.MainActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
