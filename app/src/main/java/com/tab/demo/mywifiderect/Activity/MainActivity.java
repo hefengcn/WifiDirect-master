@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String TAG = "MainActivity";
+    private static final String TAG = "MainActivity";
 
     private Button discover;
     private Button stopDiscover;
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private WifiP2pManager.Channel mChannel;
     private BroadcastReceiver mReceiver;
     private IntentFilter mFilter;
-    private WifiP2pInfo mP2PInfo;
+    private WifiP2pInfo mInfo;
 
     private FileServerAsyncTask mServerTask;
     private DataServerAsyncTask mDataTask;
@@ -65,24 +65,23 @@ public class MainActivity extends AppCompatActivity {
 
         initView();
         initIntentFilter();
-        initReceiver();
+        initWiFiP2P();
         initEvents();
     }
 
     private void initView() {
-        beGroupOwner = (Button) findViewById(R.id.bt_bgowner);
-        stopDiscover = (Button) findViewById(R.id.bt_stopdiscover);
-        discover = (Button) findViewById(R.id.bt_discover);
-        stopConnect = (Button) findViewById(R.id.bt_stopconnect);
-        sendPicture = (Button) findViewById(R.id.bt_sendpicture);
-        sendData = (Button) findViewById(R.id.bt_senddata);
+        beGroupOwner = findViewById(R.id.bt_bgowner);
+        stopDiscover = findViewById(R.id.bt_stopdiscover);
+        discover = findViewById(R.id.bt_discover);
+        stopConnect = findViewById(R.id.bt_stopconnect);
+        sendPicture = findViewById(R.id.bt_sendpicture);
+        sendData = findViewById(R.id.bt_senddata);
         sendPicture.setVisibility(View.GONE);
         sendData.setVisibility(View.GONE);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        mRecyclerView = findViewById(R.id.recyclerview);
         mAdapter = new MyAdapter(peersShow);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager
-                (this.getApplicationContext()));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getApplicationContext()));
     }
 
     private void initIntentFilter() {
@@ -94,11 +93,11 @@ public class MainActivity extends AppCompatActivity {
         mFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
     }
 
-    private void initReceiver() {
+    private void initWiFiP2P() {
         mManager = (WifiP2pManager) getSystemService(WIFI_P2P_SERVICE);
         mChannel = mManager.initialize(this, Looper.myLooper(), null);
 
-        WifiP2pManager.PeerListListener mPeerListListerner = new WifiP2pManager.PeerListListener() {
+        WifiP2pManager.PeerListListener peerListListener = new WifiP2pManager.PeerListListener() {
             @Override
             public void onPeersAvailable(WifiP2pDeviceList peersList) {
                 peers.clear();
@@ -119,8 +118,8 @@ public class MainActivity extends AppCompatActivity {
                 mAdapter.SetOnItemClickListener(new MyAdapter.OnItemClickListener() {
                     @Override
                     public void OnItemClick(View view, int position) {
-                        CreateConnect(peersShow.get(position).get("address"),
-                                peersShow.get(position).get("name"));
+                        CreateConnect(peersShow.get(position).get("address")
+                        );
 
                     }
 
@@ -138,9 +137,9 @@ public class MainActivity extends AppCompatActivity {
             public void onConnectionInfoAvailable(final WifiP2pInfo info) {
 
                 Log.i(TAG, "onConnectionInfoAvailable");
-                mP2PInfo = info;
-                TextView view = (TextView) findViewById(R.id.tv_main);
-                if (mP2PInfo.groupFormed && mP2PInfo.isGroupOwner) {
+                mInfo = info;
+                TextView view = findViewById(R.id.tv_main);
+                if (mInfo.groupFormed && mInfo.isGroupOwner) {
                     Log.i(TAG, "owner start");
 
                     mServerTask = new FileServerAsyncTask(MainActivity.this, view);
@@ -149,12 +148,12 @@ public class MainActivity extends AppCompatActivity {
                     mDataTask = new DataServerAsyncTask(MainActivity.this, view);
                     mDataTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-                } else if (mP2PInfo.groupFormed) {
+                } else if (mInfo.groupFormed) {
                     SetButtonVisible();
                 }
             }
         };
-        mReceiver = new WifiDirectBroadcastReceiver(mManager, mChannel, this, mPeerListListerner, mInfoListener);
+        mReceiver = new WifiDirectBroadcastReceiver(mManager, mChannel, this, peerListListener, mInfoListener);
     }
 
     private void initEvents() {
@@ -168,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
         beGroupOwner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BeGroupOwener();
+                BeGroupOwner();
             }
         });
 
@@ -197,16 +196,14 @@ public class MainActivity extends AppCompatActivity {
         sendData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent serviceIntent = new Intent(MainActivity.this,
-                        DataTransferService.class);
+                Intent serviceIntent = new Intent(MainActivity.this, DataTransferService.class);
 
                 serviceIntent.setAction(DataTransferService.ACTION_SEND_FILE);
 
                 serviceIntent.putExtra(DataTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
-                        mP2PInfo.groupOwnerAddress.getHostAddress());
-                Log.i("address", "owenerip is " + mP2PInfo.groupOwnerAddress.getHostAddress());
-                serviceIntent.putExtra(DataTransferService.EXTRAS_GROUP_OWNER_PORT,
-                        8888);
+                        mInfo.groupOwnerAddress.getHostAddress());
+                Log.i(TAG, "owner's ip is " + mInfo.groupOwnerAddress.getHostAddress());
+                serviceIntent.putExtra(DataTransferService.EXTRAS_GROUP_OWNER_PORT, 8888);
                 MainActivity.this.startService(serviceIntent);
             }
         });
@@ -215,8 +212,8 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.SetOnItemClickListener(new MyAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(View view, int position) {
-                CreateConnect(peersShow.get(position).get("address"),
-                        peersShow.get(position).get("name"));
+                CreateConnect(peersShow.get(position).get("address")
+                );
             }
 
             @Override
@@ -225,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void BeGroupOwener() {
+    private void BeGroupOwner() {
         mManager.createGroup(mChannel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
@@ -245,17 +242,14 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 20) {
             super.onActivityResult(requestCode, resultCode, data);
             Uri uri = data.getData();
-            Intent serviceIntent = new Intent(MainActivity.this,
-                    FileTransferService.class);
+            Intent serviceIntent = new Intent(MainActivity.this, FileTransferService.class);
 
             serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
-            serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH,
-                    uri.toString());
-
+            serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uri.toString());
             serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
-                    mP2PInfo.groupOwnerAddress.getHostAddress());
-            serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT,
-                    8988);
+                    mInfo.groupOwnerAddress.getHostAddress());
+            serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
+
             MainActivity.this.startService(serviceIntent);
         }
     }
@@ -278,27 +272,21 @@ public class MainActivity extends AppCompatActivity {
     and you can send file or data by socket,what is the most important is that you can set
     which device is the client or service.*/
 
-    private void CreateConnect(String address, final String name) {
-        WifiP2pDevice device;
+    private void CreateConnect(String address) {
+
         WifiP2pConfig config = new WifiP2pConfig();
-        Log.i(TAG, address);
 
         config.deviceAddress = address;
-        /*mac地址*/
-
         config.wps.setup = WpsInfo.PBC;
-        Log.i("address", "MAC IS " + address);
+        Log.i(TAG, "MAC address is " + address);
         if (address.equals("9a:ff:d0:23:85:97")) {
             config.groupOwnerIntent = 0;
-            Log.i("address", "lingyige shisun");
         }
         if (address.equals("36:80:b3:e8:69:a6")) {
             config.groupOwnerIntent = 15;
-            Log.i("address", "lingyigeshiwo");
-
         }
 
-        Log.i("address", "lingyige youxianji" + String.valueOf(config.groupOwnerIntent));
+        Log.i(TAG, "config.groupOwnerIntent: " + config.groupOwnerIntent);
 
         mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
 
@@ -363,7 +351,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        Log.i(TAG, "hehehehehe");
         unregisterReceiver(mReceiver);
     }
 
@@ -373,10 +360,4 @@ public class MainActivity extends AppCompatActivity {
         StopConnect();
     }
 
-    public void ResetReceiver() {
-
-        unregisterReceiver(mReceiver);
-        registerReceiver(mReceiver, mFilter);
-
-    }
 }

@@ -10,7 +10,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
-
+    private static final String TAG = "BroadcastReceiver";
     private WifiP2pManager mManager;
     private WifiP2pManager.Channel mChannel;
     private Activity mActivity;
@@ -34,39 +34,44 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
 
         String action = intent.getAction();
 
-        /*check if the wifi is enable*/
+        /*Broadcast intent action to indicate whether Wi-Fi p2p is enabled or disabled. An
+         *extra EXTRA_WIFI_STATE provides the state information as int.*/
         if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
+            if (state != WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
+                Toast.makeText(mActivity, "Wi-Fi p2p is not enabled", Toast.LENGTH_SHORT).show();
+            }
         }
 
-        /*get the list*/
+        /*Broadcast intent action indicating that the available peer list has changed.
+         *This can be sent as a result of peers being found, lost or updated.*/
         else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
-
             mManager.requestPeers(mChannel, mPeerListListener);
-        } else if (WifiP2pManager.WIFI_P2P_DISCOVERY_CHANGED_ACTION.equals(action)) {
+        }
+        /*Broadcast intent action indicating that peer discovery has either started or stopped.
+         *One extra EXTRA_DISCOVERY_STATE indicates whether discovery has started or stopped.*/
+        else if (WifiP2pManager.WIFI_P2P_DISCOVERY_CHANGED_ACTION.equals(action)) {
             int State = intent.getIntExtra(WifiP2pManager.EXTRA_DISCOVERY_STATE, -1);
             if (State == WifiP2pManager.WIFI_P2P_DISCOVERY_STARTED)
-                Toast.makeText(mActivity, "搜索开启", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mActivity, "discovery has started", Toast.LENGTH_SHORT).show();
             else if (State == WifiP2pManager.WIFI_P2P_DISCOVERY_STOPPED)
-                Toast.makeText(mActivity, "搜索已关闭", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mActivity, "discovery has stopped", Toast.LENGTH_SHORT).show();
 
         }
-        /*Respond to new connection or disconnections*/
+        /**
+         * Broadcast intent action indicating that the state of Wi-Fi p2p connectivity
+         * has changed. One extra EXTRA_WIFI_P2P_INFO provides the p2p connection info in
+         * the form of a WifiP2pInfo object. Another extra EXTRA_NETWORK_INFO provides
+         * the network info in the form of a NetworkInfo. A third extra provides
+         * the details of the group.*/
         else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
-
-            if (mManager == null) {
-                return;
-            }
-
-            NetworkInfo networkInfo = (NetworkInfo) intent
-                    .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
-
+            if (mManager == null) return;
+            NetworkInfo networkInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
             if (networkInfo.isConnected()) {
-                Log.i("xyz", "已连接");
+                Log.i(TAG, "p2p is connected");
                 mManager.requestConnectionInfo(mChannel, mInfoListener);
             } else {
-                Log.i("xyz", "断开连接");
-                return;
+                Log.i(TAG, "p2p is disconnected");
             }
         }
 
